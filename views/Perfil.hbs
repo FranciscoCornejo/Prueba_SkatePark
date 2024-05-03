@@ -1,0 +1,92 @@
+<!-- Perfil.hbs -->
+<div class="py-4">
+    <h2>Datos del perfil</h2>
+    <hr class="w-50" />
+
+    <form>
+        <div class="form-group row w-50 m-auto">
+            <div class="form-group col-12 col-sm-6">
+                <label>Email</label>
+                <input name="email" class="form-control m-auto" disabled value="{{skater.email}}" />
+            </div>
+            <div class="form-group col-12 col-sm-6">
+                <label>Nombre</label>
+                <input name="nombre" class="form-control m-auto" value="{{skater.nombre}}" />
+            </div>
+            <div class="form-group col-12 col-sm-6">
+                <label>Password</label>
+                <input name="password" type="password" class="form-control m-auto" value="{{skater.password}}" />
+            </div>
+            <div class="form-group col-12 col-sm-6">
+                <label>Repita la password</label>
+                <input type="password" class="form-control m-auto" value="{{skater.password}}" />
+            </div>
+            <div class="form-group col-12 col-sm-6">
+                <label>Años de experiencia</label>
+                <input name="anos_experiencia" class="form-control m-auto" value="{{skater.anos_experiencia}}" />
+            </div>
+            <div class="form-group col-12 col-sm-6">
+                <label>Especialidad</label>
+                <input name="especialidad" class="form-control m-auto" value="{{skater.especialidad}}" />
+            </div>
+        </div>
+        <div class="mb-1">
+            <button class="btn btn-primary" id="updateBtn">Actualizar</button>
+        </div>
+        <div>
+        </div>
+    </form>
+    <button class="btn btn-danger" id="deleteBtn">Eliminar cuenta</button>
+</div>
+
+<script>
+    const deleteBtn = document.getElementById("deleteBtn");
+
+    deleteBtn.addEventListener("click", async () => {
+        try {
+            const email = "{{skater.email}}"; // Obtener el correo electrónico del usuario
+            const { data: token } = await axios.post(`/perfil/${email}`, { action: "delete" }); // Enviar la acción de eliminación al servidor
+            alert("Usuario eliminado con éxito");
+            window.location = `/`; // Redirigir al usuario a la página de inicio
+        } catch (error) {
+            const { response } = error;
+            const { data } = response;
+            const { error: errorMessage } = data;
+            alert(errorMessage);
+        }
+    });
+
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = "{{skater.email}}"; // Obtener el correo electrónico del usuario
+
+    const nombre = document.querySelector("input[name=nombre]").value;
+    const password = document.querySelector("input[name=password]").value;
+    const anos_experiencia = document.querySelector("input[name=anos_experiencia]").value;
+    const especialidad = document.querySelector("input[name=especialidad]").value;
+
+    const skater = {
+        nombre,
+        password,
+        anos_experiencia,
+        especialidad
+    };
+
+    try {
+        const response = await axios.post(`/perfil/${email}`, { ...skater, action: "update" }); // Enviar la acción de actualización al servidor
+        console.log('Respuesta del servidor:', response.data);
+        alert("Datos actualizados con éxito");
+        window.location = `/login`; // Redirigir al usuario a la página de inicio de sesión después de actualizar los datos
+    } catch (error) {
+        console.error('Error al enviar la solicitud de actualización:', error);
+        const { response } = error;
+        const { data } = response;
+        const { error: errorMessage } = data;
+        alert(errorMessage);
+    }
+});
+
+</script>
